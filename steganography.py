@@ -1,6 +1,8 @@
 import piexif
 from PIL import Image
 import numpy as np
+import cv2 
+import random
 
 # VERY SIMPLE METHOD, EASY TO DETECT! -> should encrypt the message
 # Encode message in binary and append it to the end of image file
@@ -109,3 +111,57 @@ def exctract_messge_from_lsb(filename, end_of_message = None):
             break
         result += l
     return result
+
+# hide another image inside an image using bits_no of bits for the hidden imageg
+def hide_image_inside_lsb(cover_image_path, secret_image_path, result_image_path, bits_no=4):
+    img1 = cv2.imread(cover_image_path) 
+    img2 = cv2.imread(secret_image_path) 
+    
+    print(img1.shape)
+
+      
+    for i in range(img2.shape[0]): 
+        for j in range(img2.shape[1]): 
+            for l in range(3): 
+                  
+                # v1 and v2 are 8-bit pixel values 
+                # of img1 and img2 respectively 
+                v1 = format(img1[i][j][l], '08b') 
+                v2 = format(img2[i][j][l], '08b') 
+                  
+                # Taking 4 MSBs of each image 
+                v3 = v1[:(8-bits_no)] + v2[:bits_no]  
+                  
+                img1[i][j][l]= int(v3, 2) 
+                  
+    cv2.imwrite(result_image_path, img1)
+    
+def extract_image_from_lsb(image_path, result_cover_path, result_hidden_path, bits_no = 4):
+
+    img = cv2.imread(image_path)  
+    height = img.shape[0] 
+    width = img.shape[1] 
+    
+    print(width)
+    print(height)
+    
+      
+    # img1 and img2 are two blank images 
+    img1 = np.zeros((height, width, 3), np.uint8) 
+    img2 = np.zeros((height, width, 3), np.uint8) 
+      
+    for i in range(height ): 
+        for j in range(width): 
+            for l in range(3): 
+                v1 = format(img[i][j][l], '08b') 
+                v2 = v1[:(8-bits_no)] + chr(random.randint(0, 1)+48) * bits_no
+                v3 = v1[bits_no:] + chr(random.randint(0, 1)+48) * (8-bits_no)
+                  
+                # Appending data to img1 and img2 
+                img1[i][j][l]= int(v2, 2) 
+                img2[i][j][l]= int(v3, 2) 
+      
+    # These are two images produced from 
+    # the encrypted image 
+    cv2.imwrite(result_cover_path, img1) 
+    cv2.imwrite(result_hidden_path, img2) 
