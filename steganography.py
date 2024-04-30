@@ -6,20 +6,36 @@ import random
 from Pylette import extract_colors
 from scipy.fftpack import dct, idct
 import itertools
+from pathlib import Path
+
+temp_image_name = 'temp/temp.png'
+
+def check_file_extension(filename, extension):
+    return Path(filename).suffix.lower() == extension.lower()
 
 # VERY SIMPLE METHOD, EASY TO DETECT! -> should encrypt the message
 # Encode message in binary and append it to the end of image file
 def append_after(filename, message):
-    with open(filename,"ab") as f:
+    temp_img = cv2.imread(filename)
+    cv2.imwrite(temp_image_name,temp_img)
+    with open(temp_image_name,"ab") as f:
         f.write(message.encode('utf8'))
+    return temp_image_name
 # Extract message appended at the end of a JPG file        
 def extract_append_after(filename):
-    trailer = 'ffd9' # trailer for JPEG
+    trailer = ''
+    if(check_file_extension(filename,".jpg")):
+        trailer = 'ffd9' # trailer for JPEG
+    if(check_file_extension(filename,".png")):
+        trailer = '49454E44' # trailer for PNG
 
     # Get trailer offset
     with open(filename, "rb") as cover_secret:
         file = cover_secret.read()
         offset = file.index(bytes.fromhex(trailer))
+    
+    if(check_file_extension(filename,".png")):
+        offset+=4 #only for png
 
     # Write cover bytes to output file from offset + trailer length
     with open(filename, "rb") as cover_secret:
