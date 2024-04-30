@@ -1,6 +1,8 @@
 import steganography as steg
 from tkinter import *
+from customtkinter import *
 import cv2
+from PIL import Image
 
 from GUI.hide_secret_image_window import open_hide_secret_message_window
 from GUI.extract_secret_image_window import open_extract_secret_message_window
@@ -50,43 +52,46 @@ def main():
     # tests()
     # exit(1)
     
-    root = Tk()
+    root = CTk()
     root.title("Steganography")
     root.configure(background="skyblue")
 
     # Create left and right frames
-    left_frame = Frame(root, width=400, height=600, bg='grey')
+    left_frame = CTkFrame(root, width=400, height=600)
     left_frame.grid(row=0, column=0, padx=10, pady=5)
 
-    right_frame = Frame(root, width=850, height=600, bg='grey')
+    right_frame = CTkFrame(root, width=850, height=600)
     right_frame.grid(row=0, column=1, padx=10, pady=5)
 
     # Create frames and labels in left_frame
-    Label(left_frame, text="Original Image").grid(row=0, column=0, padx=5, pady=5)
+    CTkLabel(left_frame, text="Original Image").grid(row=0, column=0, padx=5, pady=5)
 
     # load image to be "edited"
-    image = PhotoImage(file=cover_img_path2)
-    original_image = image.subsample(3,3)  # resize image using subsample
-    test = Label(left_frame, image=original_image)
+    image = Image.open(cover_img_path2)
+    original_image = image.copy()
+    image.thumbnail((100,100), Image.Resampling.LANCZOS)
+    test = CTkLabel(left_frame, text='', image=CTkImage(dark_image=image, size=image.size))
     test.grid(row=1, column=0, padx=5, pady=5)
 
     # Display image in right_frame
-    Label(right_frame, image=image).grid(row=0,column=0, padx=5, pady=5)
+    original_image.thumbnail((300,300), Image.Resampling.LANCZOS)
+    print(original_image.size)
+    CTkLabel(right_frame,text='', image=CTkImage(dark_image=original_image, size=original_image.size)).grid(row=0,column=0, padx=5, pady=5)
 
     # Create tool bar frame
-    tool_bar = Frame(left_frame, width=180, height=185)
+    tool_bar = CTkFrame(left_frame, width=180, height=185)
     tool_bar.grid(row=2, column=0, padx=5, pady=5)
 
     # Example labels that serve as placeholders for other widgets
-    Button(tool_bar, text="Tools", relief=RAISED, command=lambda:open_extract_secret_message_window(root)).grid(row=0, column=0, padx=5, pady=3, ipadx=10)  # ipadx is padding inside the Label widget
-    Button(tool_bar, text="Filters", relief=RAISED, command=lambda:open_hide_secret_message_window(root)).grid(row=0, column=1, padx=5, pady=3, ipadx=10)
+    CTkButton(tool_bar, text="Tools", command=lambda:open_extract_secret_message_window(root)).grid(row=0, column=0, padx=5, pady=3, ipadx=10)  # ipadx is padding inside the Label widget
+    CTkButton(tool_bar, text="Filters", command=lambda:open_hide_secret_message_window(root)).grid(row=0, column=1, padx=5, pady=3, ipadx=10)
 
     # Example labels that could be displayed under the "Tool" menu
-    Button(tool_bar, text="Select").grid(row=1, column=0, padx=5, pady=5)
-    Label(tool_bar, text="Crop").grid(row=2, column=0, padx=5, pady=5)
-    Label(tool_bar, text="Rotate & Flip").grid(row=3, column=0, padx=5, pady=5)
-    Label(tool_bar, text="Resize").grid(row=4, column=0, padx=5, pady=5)
-    Label(tool_bar, text="Exposure").grid(row=5, column=0, padx=5, pady=5)
+    CTkButton(tool_bar, text="Select").grid(row=1, column=0, padx=5, pady=5)
+    CTkLabel(tool_bar, text="Crop").grid(row=2, column=0, padx=5, pady=5)
+    CTkLabel(tool_bar, text="Rotate & Flip").grid(row=3, column=0, padx=5, pady=5)
+    CTkLabel(tool_bar, text="Resize").grid(row=4, column=0, padx=5, pady=5)
+    CTkLabel(tool_bar, text="Exposure").grid(row=5, column=0, padx=5, pady=5)
     
     root.mainloop()
 
