@@ -2,7 +2,8 @@ import steganography as steg
 from tkinter import *
 import cv2
 
-from secret_image_window import open_secret_message_window
+from GUI.hide_secret_image_window import open_hide_secret_message_window
+from GUI.extract_secret_image_window import open_extract_secret_message_window
 
 cover_img_path1 = "images/cover.jpg"
 cover_img_path2 = "images/dog.png"
@@ -77,8 +78,8 @@ def main():
     tool_bar.grid(row=2, column=0, padx=5, pady=5)
 
     # Example labels that serve as placeholders for other widgets
-    Button(tool_bar, text="Tools", relief=RAISED, command=lambda:button_do_smth(test)).grid(row=0, column=0, padx=5, pady=3, ipadx=10)  # ipadx is padding inside the Label widget
-    Button(tool_bar, text="Filters", relief=RAISED, command=lambda:open_secret_message_window(root)).grid(row=0, column=1, padx=5, pady=3, ipadx=10)
+    Button(tool_bar, text="Tools", relief=RAISED, command=lambda:open_extract_secret_message_window(root)).grid(row=0, column=0, padx=5, pady=3, ipadx=10)  # ipadx is padding inside the Label widget
+    Button(tool_bar, text="Filters", relief=RAISED, command=lambda:open_hide_secret_message_window(root)).grid(row=0, column=1, padx=5, pady=3, ipadx=10)
 
     # Example labels that could be displayed under the "Tool" menu
     Button(tool_bar, text="Select").grid(row=1, column=0, padx=5, pady=5)

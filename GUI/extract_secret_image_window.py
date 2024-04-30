@@ -9,7 +9,7 @@ secret_image_path = 'images/secret.png'
 temp_image_path = default_iamge_path
 
 
-def browseFiles(original_image_label):
+def browseFiles(original_image_label, right_image_label):
     global loaded_image_path
     filename = filedialog.askopenfilename(initialdir = "/",
                                           title = "Select a File",
@@ -23,30 +23,25 @@ def browseFiles(original_image_label):
     # Change label contents
     loaded_image_path = filename 
     new_image = PhotoImage(file=loaded_image_path)
-    new_image = new_image.subsample(3,3) 
-    original_image_label.configure(image=new_image)
-    original_image_label.image = new_image
+    new_image_mini = new_image.subsample(3,3) 
+    original_image_label.configure(image=new_image_mini)
+    original_image_label.image = new_image_mini
     
-def select_directory():
+    right_image_label.configure(image=new_image)
+    right_image_label.image = new_image
+    
+    
+def extract_message(secret_message_label, mode):
     global loaded_image_path
-    global secret_image_path
-    if(loaded_image_path == default_iamge_path):
-        return
-    
-    folder_path = filedialog.askdirectory()
-    secret_image_path = folder_path
-    
-def hide_message(secret_message_entry, mode):
-    global loaded_image_path
-    secret = secret_message_entry.get()
-    print(secret)
-    print(loaded_image_path)
-    if(mode=="EOF"):
-        temp_image_path=steg.append_after(loaded_image_path,secret)
-        print(temp_image_path)
-        
 
-def open_secret_message_window(root_window):
+    result = ''
+    if(mode=="EOF"):
+        result = steg.extract_append_after(loaded_image_path)
+        
+    secret_message_label.configure(text=result)
+    print(result)
+
+def open_extract_secret_message_window(root_window):
     window = Toplevel(root_window)
     window.title("Secret message")
     window.configure(background="skyblue")
@@ -69,10 +64,12 @@ def open_secret_message_window(root_window):
     original_image_label = Label(left_frame, image=original_image)
     original_image_label.grid(row=1, column=0, padx=5, pady=5)
     
+    right_panel_image = Label(right_frame, image=image)
+    
     # fiel explorer button
     button_explore = Button(left_frame, 
                         text = "Browse Files",
-                        command = lambda:browseFiles(original_image_label)) 
+                        command = lambda:browseFiles(original_image_label,right_panel_image)) 
     button_explore.grid(row=2,column = 0,padx=5, pady=5)
     
     
@@ -80,23 +77,26 @@ def open_secret_message_window(root_window):
     tool_bar = Frame(left_frame, width=180, height=185)
     tool_bar.grid(row=3, column=0, padx=5, pady=5, sticky='ew')
     
-    secret_message_entry = Entry(tool_bar)
-    Label(tool_bar, text="Secret:").grid(row=0, column=0, padx=5, pady=3, ipadx=10) 
-    secret_message_entry.grid(row=0, column=1, padx=5, pady=3, ipadx=10, sticky='ew') 
+    secret_message_label = Label(right_frame)
 
+    #this 3 liens are used just for alignement, they are not shown in the app
+    secret_message_entry = Entry(tool_bar)
+    Label(tool_bar, text="Secret:").grid(row=0, column=0, padx=5, pady=3, ipadx=10,sticky='ew') 
+    secret_message_entry.grid(row=0, column=1, padx=5, pady=3, ipadx=10, sticky='ew') 
+    
     # Example labels that serve as placeholders for other widgets
-    Label(tool_bar, text="METHODS:").grid(row=3, column=0, padx=5, pady=3, ipadx=10, sticky='ew', columnspan=2) 
+    Label(tool_bar, text="METHODS:").grid(row=0, column=0, padx=5, pady=3, ipadx=10, sticky='ew', columnspan=10) 
 
     # Example labels that could be displayed under the "Tool" menu
-    Button(tool_bar, text="After EOF", command=lambda:hide_message(secret_message_entry,"EOF")).grid(row=4, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
-    Button(tool_bar, text="Metadata").grid(row=5, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
-    Button(tool_bar, text="LSB").grid(row=6, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
-    Button(tool_bar, text="DCT").grid(row=7, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    Button(tool_bar, text="After EOF", command=lambda:extract_message(secret_message_label,"EOF")).grid(row=1, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    Button(tool_bar, text="Metadata").grid(row=2, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    Button(tool_bar, text="LSB").grid(row=3, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    Button(tool_bar, text="DCT").grid(row=4, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
     
     
     # Display image in right_frame
-    Label(right_frame, image=image).grid(row=0,column=0, padx=5, pady=5)
-    Button(right_frame, text='Save', width=20, command=lambda:select_directory()).grid(row=1,column=0, padx=5, pady=5, sticky='w')
-
+    right_panel_image.grid(row=0,column=0, padx=5, pady=5)
+    Label(right_frame,text="Secret: ").grid(row=1, column=0, padx=5, pady=3, ipadx=10, sticky='w') 
+    secret_message_label.grid(row=1, column=1, padx=5, pady=3, ipadx=10, sticky="ew", columnspan=10) 
     window.mainloop()
 
