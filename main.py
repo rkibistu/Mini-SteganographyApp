@@ -1,5 +1,7 @@
 import steganography as steg
 
+import cv2
+
 cover_img_path1 = "images/cover.jpg"
 cover_img_path2 = "images/dog.png"
 cover_img_path3 = "images/lsb_img1.jpg"
@@ -17,8 +19,21 @@ def main():
     # test = steg.exctract_messge_from_lsb("images/lsb_msg_image.png",'!')
     # print(test)
     
-    steg.hide_image_inside_lsb(cover_img_path3,hidden_img_path,"images/hidden_img.png",2)
-    steg.extract_image_from_lsb("images/hidden_img.png","images/extracted_img1.png","images/extracted_img2.png",2)
+    #steg.hide_image_inside_lsb(cover_img_path3,hidden_img_path,"images/hidden_img.png",2)
+    #steg.extract_image_from_lsb("images/hidden_img.png","images/extracted_img1.png","images/extracted_img2.png",2)
+
+    #steg.hide_message_inside_pallete(cover_img_path3, "culorile ascund ceva")
+    
+    #steg.dft(cover_img_path3, "images/dft.jpg")
+    #steg.extract_message_dft("images/dft.jpg")
+
+    dct_img = cv2.imread(cover_img_path3, cv2.IMREAD_UNCHANGED)
+    dct_img_encoded = steg.DCT().encode_image(dct_img, "secreeet")
+    cv2.imwrite("images/lasttest.png",dct_img_encoded)
+    
+    dct_img = cv2.imread("images/lasttest.png", cv2.IMREAD_UNCHANGED)
+    dct_hidden_text = steg.DCT().decode_image(dct_img)
+    print(dct_hidden_text)
 
 if __name__ == "__main__":
     main()
