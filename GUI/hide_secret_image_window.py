@@ -55,6 +55,8 @@ def hide_message(secret_message_entry,generated_image_label, mode):
         steg.hide_inside_metadata(loaded_image_path,temp_image_path, secret)
     elif(mode=="lsb"):
         steg.hide_message_inside_lsb(loaded_image_path,temp_image_path,secret,"!")
+    elif(mode=="dct"):
+        steg.hide_message_inside_dct(loaded_image_path,temp_image_path,secret)
     elif():
         print("Wrong mode: ",mode)
         return

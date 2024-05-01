@@ -44,6 +44,8 @@ def extract_message(secret_message_label, mode):
         result = steg.extract_from_metada(loaded_image_path)
     elif(mode=="lsb"):
         result = steg.exctract_messge_from_lsb(loaded_image_path,"!")
+    elif(mode=='dct'):
+        result = steg.extract_message_from_dct(loaded_image_path)
     else:
         print("Wrong mode: ",mode)
         return

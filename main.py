@@ -46,9 +46,8 @@ def button_do_smth(label):
 
 def main():
     
-    tests()
-    # exit(1)
-    # open_main_window()
+    # tests()
+    open_main_window()
     
 
 if __name__ == "__main__":
