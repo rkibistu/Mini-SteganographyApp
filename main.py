@@ -33,14 +33,10 @@ def tests():
     #steg.dft(cover_img_path3, "images/dft.jpg")
     #steg.extract_message_dft("images/dft.jpg")
 
-    # dct_img = cv2.imread(cover_img_path3, cv2.IMREAD_UNCHANGED)
-    # dct_img_encoded = steg.DCT().encode_image(dct_img, "secreeet")
-    # cv2.imwrite("images/lasttest.png",dct_img_encoded)
+    steg.hide_message_inside_dct(cover_img_path3,"images/lasttest.png", "secreeet")
     
-    # dct_img = cv2.imread("images/lasttest.png", cv2.IMREAD_UNCHANGED)
-    # dct_hidden_text = steg.DCT().decode_image(dct_img)
-    # print(dct_hidden_text)
-
+    dct_hidden_text = steg.extract_message_from_dct("images/lasttest.png")
+    print(dct_hidden_text)
 
 def button_do_smth(label):
     image = PhotoImage(file="images/dog2.png")
@@ -50,9 +46,9 @@ def button_do_smth(label):
 
 def main():
     
-    # tests()
+    tests()
     # exit(1)
-    open_main_window()
+    # open_main_window()
     
 
 if __name__ == "__main__":
