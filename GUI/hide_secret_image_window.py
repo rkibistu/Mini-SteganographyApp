@@ -8,6 +8,7 @@ from GUI.settings import *
 
 default_iamge_path = 'images/question.png'
 loaded_image_path = default_iamge_path
+loaded_image_path = default_iamge_path
 secret_image_path = 'images/secret.png'
 temp_image_path = 'temp/temp.png'
 
@@ -49,18 +50,21 @@ def hide_message(secret_message_entry,generated_image_label, mode):
     global loaded_image_path
     global temp_image_path
     secret = secret_message_entry.get()
+    res = 0
+    print(loaded_image_path)
     if(mode=="EOF"):
-        steg.append_after(loaded_image_path,temp_image_path,secret)
+        res =steg.append_after(loaded_image_path,temp_image_path,secret)
     elif(mode=="metadata"):
-        steg.hide_inside_metadata(loaded_image_path,temp_image_path, secret)
+        res = steg.hide_inside_metadata(loaded_image_path,temp_image_path, secret)
     elif(mode=="lsb"):
-        steg.hide_message_inside_lsb(loaded_image_path,temp_image_path,secret,"!")
+        res = steg.hide_message_inside_lsb(loaded_image_path,temp_image_path,secret,"!")
     elif(mode=="dct"):
-        steg.hide_message_inside_dct(loaded_image_path,temp_image_path,secret)
+        res = steg.hide_message_inside_dct(loaded_image_path,temp_image_path,secret)
     elif():
         print("Wrong mode: ",mode)
         return
-    print("Temp saved to: ",temp_image_path, " with secret: ",secret)
+    if(res != -1):
+        print("Temp saved to: ",temp_image_path, " with secret: ",secret)
         
     
     # Change label contents

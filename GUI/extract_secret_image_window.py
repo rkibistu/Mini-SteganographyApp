@@ -93,7 +93,7 @@ def open_extract_secret_message_window(root_window):
     tool_bar = CTkFrame(left_frame, width=180, height=185)
     tool_bar.grid(row=3, column=0, padx=5, pady=5, sticky='ew')
     
-    secret_message_label = CTkLabel(right_frame)
+    secret_message_label = CTkLabel(right_frame,text='___')
 
     #this 3 liens are used just for alignement, they are not shown in the app
     secret_message_entry = CTkEntry(tool_bar)
