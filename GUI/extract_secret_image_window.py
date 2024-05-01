@@ -48,6 +48,8 @@ def open_extract_secret_message_window(root_window):
     window = CTkToplevel(root_window)
     window.title("Secret message")
     window.configure(background="skyblue")
+    window.grab_set()
+
 
     # Create left and right frames
     left_frame = CTkFrame(window, width=400, height=600)
