@@ -94,7 +94,7 @@ def hide_message_inside_lsb(filename, result_filename, message, end_of_message =
         channels = len(img.mode)
         if(img.mode == 'P'):
             print("Image written in pallete mode not supported!")
-            return
+            return -1
 
         
     # Flatten the pixel arrays (only one array)
@@ -279,6 +279,10 @@ quant = np.array([[16,11,10,16,24,40,51,61],      # QUANTIZATION TABLE
 def hide_message_inside_dct(filename_path, result_path,secret_msg):
     #show(img)
     img = cv2.imread(filename_path, cv2.IMREAD_UNCHANGED)
+    w,h,channels = img.shape
+    if(channels != 3):
+        print("Wrong fromat. Expected 3 channels image, got: ",channels)
+        return -1
     secret=secret_msg
     message = str(len(secret))+'*'+secret
     bitMess = toBits(message)
