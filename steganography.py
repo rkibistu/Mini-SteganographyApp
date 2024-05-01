@@ -15,12 +15,12 @@ def check_file_extension(filename, extension):
 
 # VERY SIMPLE METHOD, EASY TO DETECT! -> should encrypt the message
 # Encode message in binary and append it to the end of image file
-def append_after(filename, message):
+def append_after(filename,result_filename,message):
     temp_img = cv2.imread(filename)
-    cv2.imwrite(temp_image_name,temp_img)
-    with open(temp_image_name,"ab") as f:
+    cv2.imwrite(result_filename,temp_img)
+    with open(result_filename,"ab") as f:
         f.write(message.encode('utf8'))
-    return temp_image_name
+    return result_filename
 # Extract message appended at the end of a JPG file        
 def extract_append_after(filename):
     trailer = ''
@@ -86,19 +86,25 @@ def hide_message_inside_lsb(filename, result_filename, message, end_of_message =
 
     b_message_lenght = len(b_message)
 
+    channels = 0
     # Get the image pixel arrays 
     with Image.open(filename) as img:
         width, height = img.size
         data = np.array(img)
+        channels = len(img.mode)
+        if(img.mode == 'P'):
+            print("Image written in pallete mode not supported!")
+            return
+
         
     # Flatten the pixel arrays (only one array)
-    data = np.reshape(data, width*height*4)
+    data = np.reshape(data, width*height*channels)
 
     # Overwrite pixel LSB
     data[:b_message_lenght] = data[:b_message_lenght] & ~1 | b_message
 
     # Reshape back to an image pixel array
-    data = np.reshape(data, (height, width, 4))
+    data = np.reshape(data, (height, width, channels))
 
     new_img = Image.fromarray(data)
     new_img.save(result_filename)
@@ -106,13 +112,15 @@ def hide_message_inside_lsb(filename, result_filename, message, end_of_message =
 # end_of_message is the character that marsk the end of the message
 #   if not present, read until see an unprintable value
 def exctract_messge_from_lsb(filename, end_of_message = None):
+    channels = 0
     with Image.open(filename) as img:
         width, height = img.size
          # Get the image pixel arrays 
         data = np.array(img)
+        channels = len(img.mode)
     
     # Flatten the pixel arrays (only one array)
-    data = np.reshape(data, width*height*4)
+    data = np.reshape(data, width*height*channels)
     
     # extract lsb
     data = data & 1 

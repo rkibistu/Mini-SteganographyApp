@@ -9,7 +9,7 @@ from GUI.settings import *
 default_iamge_path = 'images/question.png'
 loaded_image_path = default_iamge_path
 secret_image_path = 'images/secret.png'
-temp_image_path = default_iamge_path
+temp_image_path = 'temp/temp.png'
 
 
 def browseFiles(original_image_label):
@@ -50,8 +50,16 @@ def hide_message(secret_message_entry,generated_image_label, mode):
     global temp_image_path
     secret = secret_message_entry.get()
     if(mode=="EOF"):
-        temp_image_path=steg.append_after(loaded_image_path,secret)
-        print("Temp saved to: ",temp_image_path, " with secret: ",secret)
+        steg.append_after(loaded_image_path,temp_image_path,secret)
+    elif(mode=="metadata"):
+        steg.hide_inside_metadata(loaded_image_path,temp_image_path, secret)
+    elif(mode=="lsb"):
+        steg.hide_message_inside_lsb(loaded_image_path,temp_image_path,secret,"!")
+    elif():
+        print("Wrong mode: ",mode)
+        return
+    print("Temp saved to: ",temp_image_path, " with secret: ",secret)
+        
     
     # Change label contents
     loaded_image_path = temp_image_path 
@@ -67,7 +75,7 @@ def open_hide_secret_message_window(root_window):
     global temp_image_path
     loaded_image_path = default_iamge_path
     secret_image_path = 'images/secret.png'
-    temp_image_path = default_iamge_path
+    temp_image_path = 'temp/temp.png'
     
     window = CTkToplevel(root_window)
     window.title("Secret message")
@@ -119,9 +127,9 @@ def open_hide_secret_message_window(root_window):
 
     # Example labels that could be displayed under the "Tool" menu
     CTkButton(tool_bar, text="After EOF", command=lambda:hide_message(secret_message_entry,generated_image,"EOF")).grid(row=4, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
-    CTkButton(tool_bar, text="Metadata").grid(row=5, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
-    CTkButton(tool_bar, text="LSB").grid(row=6, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
-    CTkButton(tool_bar, text="DCT").grid(row=7, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    CTkButton(tool_bar, text="Metadata", command=lambda:hide_message(secret_message_entry,generated_image,"metadata")).grid(row=5, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    CTkButton(tool_bar, text="LSB", command=lambda:hide_message(secret_message_entry,generated_image,"lsb")).grid(row=6, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    CTkButton(tool_bar, text="DCT", command=lambda:hide_message(secret_message_entry,generated_image,"dct")).grid(row=7, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
     
     
     # Display image in right_frame

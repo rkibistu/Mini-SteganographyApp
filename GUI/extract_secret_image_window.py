@@ -40,7 +40,14 @@ def extract_message(secret_message_label, mode):
     result = ''
     if(mode=="EOF"):
         result = steg.extract_append_after(loaded_image_path)
-        
+    elif(mode=="metadata"):
+        result = steg.extract_from_metada(loaded_image_path)
+    elif(mode=="lsb"):
+        result = steg.exctract_messge_from_lsb(loaded_image_path,"!")
+    else:
+        print("Wrong mode: ",mode)
+        return
+                
     secret_message_label.configure(text=result)
     print(result)
 
@@ -96,9 +103,9 @@ def open_extract_secret_message_window(root_window):
 
     # Example labels that could be displayed under the "Tool" menu
     CTkButton(tool_bar, text="After EOF", command=lambda:extract_message(secret_message_label,"EOF")).grid(row=1, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
-    CTkButton(tool_bar, text="Metadata").grid(row=2, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
-    CTkButton(tool_bar, text="LSB").grid(row=3, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
-    CTkButton(tool_bar, text="DCT").grid(row=4, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    CTkButton(tool_bar, text="Metadata", command=lambda:extract_message(secret_message_label,"metadata")).grid(row=2, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    CTkButton(tool_bar, text="LSB", command=lambda:extract_message(secret_message_label,"lsb")).grid(row=3, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    CTkButton(tool_bar, text="DCT", command=lambda:extract_message(secret_message_label,"dct")).grid(row=4, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
     
     
     # Display image in right_frame
