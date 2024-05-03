@@ -75,15 +75,20 @@ def show_bitplanes():
     bitplane_img = steg.bitplanes2(filename,"images/bitplane.png")
     bitplane_img.show()
         
-def hide_image(source_iamge_label, dest_image_label, result_image_label):
+def hide_image(source_iamge_label, dest_image_label, result_image_label, with_secret):
     global loaded_source_image
     global loaded_dest_image
     global loaded_result_image
-    result = 1
+    res = 1
     if(radio_var.get() == 1):
         #hide
         print("hide")
-        res = steg.hide_image_inside_lsb(loaded_source_image,loaded_dest_image, save_path,bits_used)
+        if(with_secret != None):
+            print(with_secret)
+            res = steg.hide_image_inside_lsb(loaded_source_image,loaded_dest_image, save_path,bits_used,with_secret)
+        else:
+            res = steg.hide_image_inside_lsb(loaded_source_image,loaded_dest_image, save_path,bits_used)
+            
         loaded_result_image = save_path
         
         if(res == -1):
@@ -99,7 +104,11 @@ def hide_image(source_iamge_label, dest_image_label, result_image_label):
     if(radio_var.get() == 2):
         #extract
         print("extract")
-        res = steg.extract_image_from_lsb(loaded_result_image,save_path1,save_path2,bits_used)
+        if(with_secret!=None):
+            res = steg.extract_image_from_lsb(loaded_result_image,save_path1,save_path2,bits_used,with_secret)
+        else:
+            res = steg.extract_image_from_lsb(loaded_result_image,save_path1,save_path2,bits_used)
+            
         loaded_source_image = save_path1
         loaded_dest_image = save_path2
         
@@ -154,19 +163,25 @@ def open_lsb_images_window(root_window):
     radiobutton_1.grid(row=1,column = 0,padx=5, pady=5, sticky='ew', columnspan=4)
     radiobutton_2.grid(row=2,column = 0,padx=5, pady=5, sticky='ew', columnspan=4)
     
+    CTkLabel(left_frame,text="Secret: ").grid(row=3,column = 0,padx=5, pady=5, sticky='ew', columnspan=4)
+    secret_entry = CTkEntry(left_frame)
+    secret_entry.grid(row=4,column = 0,padx=5, pady=5, sticky='ew', columnspan=4)
+    
     # Create tool bar frame with accepted methods
     tool_bar = CTkFrame(left_frame, width=180, height=185)
-    tool_bar.grid(row=3, column=0, padx=5, pady=5, sticky='ew')
+    tool_bar.grid(row=5, column=0, padx=5, pady=5, sticky='ew')
+    
 
     # Example labels that serve as placeholders for other widgets
     CTkLabel(tool_bar, text="METHODS:").grid(row=3, column=0, padx=5, pady=3, ipadx=10, sticky='ew', columnspan=2) 
 
     # Example labels that could be displayed under the "Tool" menu
-    CTkButton(tool_bar, text="Basic LSB", command=lambda:hide_image(source_image_label, dest_image_label, result_image_label)).grid(row=4, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
-    CTkButton(tool_bar, text="XOR").grid(row=5, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    CTkButton(tool_bar, text="Basic LSB", command=lambda:hide_image(source_image_label, dest_image_label, result_image_label,None)).grid(row=4, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    CTkButton(tool_bar, text="XOR", command=lambda:hide_image(source_image_label, dest_image_label, result_image_label,secret_entry.get())).grid(row=5, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
     
-    CTkLabel(left_frame, text="EXTRA:").grid(row=4, column=0, padx=5, pady=3, ipadx=10, sticky='ew', columnspan=2) 
-    CTkButton(left_frame,text="Show all planes", command=show_bitplanes).grid(row=5, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
+    
+    CTkLabel(left_frame, text="EXTRA:").grid(row=6, column=0, padx=5, pady=3, ipadx=10, sticky='ew', columnspan=2) 
+    CTkButton(left_frame,text="Show all planes", command=show_bitplanes).grid(row=7, column=0, padx=5, pady=5, sticky='ew', columnspan=2)
        
     # Display objects in right_frame
     CTkLabel(right_frame,text='Lets\' hide some images').grid(row=0,column=0, padx=5, pady=5, sticky='new', columnspan=10)

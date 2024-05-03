@@ -7,7 +7,7 @@ from Pylette import extract_colors
 from scipy.fftpack import dct, idct
 import itertools
 from pathlib import Path
-
+import hashlib
 temp_image_name = 'temp/temp.png'
 
 def check_file_extension(filename, extension):
@@ -142,12 +142,17 @@ def exctract_messge_from_lsb(filename, end_of_message = None):
     return result
 
 # hide another image inside an image using bits_no of bits for the hidden imageg
-def hide_image_inside_lsb(cover_image_path, secret_image_path, result_image_path, bits_no=4):
+def hide_image_inside_lsb(cover_image_path, secret_image_path, result_image_path, bits_no=4, password=None):
     img1 = cv2.imread(cover_image_path) 
     img2 = cv2.imread(secret_image_path) 
     
     print(img1.shape)
-
+    
+    password_array = []
+    if(password):
+        password_array  = generate_random_array(password,img2.shape[0] * img2.shape[1])
+    
+    index = 0
     for i in range(img2.shape[0]): 
         for j in range(img2.shape[1]): 
             for l in range(3): 
@@ -156,6 +161,15 @@ def hide_image_inside_lsb(cover_image_path, secret_image_path, result_image_path
                 # of img1 and img2 respectively 
                 v1 = format(img1[i][j][l], '08b') 
                 v2 = format(img2[i][j][l], '08b') 
+
+                
+                if(password):
+                    temp = int(v2,2)
+                    temp = temp ^ password_array[index]
+                    index  += 1
+                    if(index >= len(password_array)):
+                        index = 0
+                    v2 = format(temp, '08b') 
                   
                 # Taking 4 MSBs of each image 
                 v3 = v1[:(8-bits_no)] + v2[:bits_no]  
@@ -164,7 +178,7 @@ def hide_image_inside_lsb(cover_image_path, secret_image_path, result_image_path
                   
     cv2.imwrite(result_image_path, img1)
     
-def extract_image_from_lsb(image_path, result_cover_path, result_hidden_path, bits_no = 4):
+def extract_image_from_lsb(image_path, result_cover_path, result_hidden_path, bits_no = 4, password=None):
 
     img = cv2.imread(image_path)  
     height = img.shape[0] 
@@ -173,17 +187,32 @@ def extract_image_from_lsb(image_path, result_cover_path, result_hidden_path, bi
     # img1 and img2 are two blank images 
     img1 = np.zeros((height, width, 3), np.uint8) 
     img2 = np.zeros((height, width, 3), np.uint8) 
+    
+    password_array = []
+    if(password):
+        password_array  = generate_random_array(password,img2.shape[0] * img2.shape[1])
       
+    index = 0
     for i in range(height ): 
         for j in range(width): 
             for l in range(3): 
                 v1 = format(img[i][j][l], '08b') 
                 v2 = v1[:(8-bits_no)] + chr(random.randint(0, 1)+48) * bits_no
                 v3 = v1[(8-bits_no):] + chr(random.randint(0, 1)+48) * (8-bits_no)
+                
+                  
+                if(password):
+                    temp = int(v3,2)
+                    temp = temp ^ password_array[index]
+                    index  += 1
+                    if(index >= len(password_array)):
+                        index = 0
+                    v3 = format(temp, '08b') 
                   
                 # Appending data to img1 and img2 
                 img1[i][j][l]= int(v2, 2) 
                 img2[i][j][l]= int(v3, 2) 
+
       
     # These are two images produced from 
     # the encrypted image 
@@ -439,3 +468,24 @@ def bitplanes2(filename, result_filename):
 
     result.save(result_filename)
     return result
+
+
+def xor_string(str):
+    result = ''
+    for i in range(len(str)):
+        if(str[i] == '0'):
+            result += '1'
+        else:
+            result += '0'
+    return result
+
+def generate_random_array(password, length):
+    # Use hashlib to generate a secure hash from the password
+    hashed_password = hashlib.sha256(password.encode()).digest()
+
+    # Seed the random number generator with the hashed password
+    random.seed(hashed_password)
+
+    # Generate the random array
+    random_array = [random.randint(0, 255) for _ in range(length)]
+    return random_array

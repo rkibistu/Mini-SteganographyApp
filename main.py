@@ -50,7 +50,11 @@ def button_do_smth(label):
 def main():
     
     #tests()
+    #print(steg.generate_random_array("parola1234",512*512))
+    # print(steg.generate_random_array("parola1234",20))
+    
     open_main_window()
+    
     
 
 if __name__ == "__main__":
