@@ -15,8 +15,8 @@ hidden_img_path = "images/lsb_img2.jpg"
 
 def tests():
     # steg.append_after(cover_img_path2,"My homeowrk here!")
-    test = steg.extract_append_after("temp/temp.png")
-    print(test)
+    # test = steg.extract_append_after("temp/temp.png")
+    # print(test)
     
     # steg.hide_inside_metadata(cover_img_path1,"images/metadata_secret.jpg","wuhuu, it is working!")
     # test = steg.extract_from_metada("images/metadata_secret.jpg")
@@ -33,10 +33,13 @@ def tests():
     #steg.dft(cover_img_path3, "images/dft.jpg")
     #steg.extract_message_dft("images/dft.jpg")
 
-    steg.hide_message_inside_dct(cover_img_path3,"images/lasttest.png", "secreeet")
+    # steg.hide_message_inside_dct(cover_img_path3,"images/lasttest.png", "secreeet")
     
-    dct_hidden_text = steg.extract_message_from_dct("images/lasttest.png")
-    print(dct_hidden_text)
+    # dct_hidden_text = steg.extract_message_from_dct("images/lasttest.png")
+    # print(dct_hidden_text)
+    
+    #steg.bitplanes("images/lsb_img1.jpg")
+    pass
 
 def button_do_smth(label):
     image = PhotoImage(file="images/dog2.png")
@@ -46,7 +49,7 @@ def button_do_smth(label):
 
 def main():
     
-    # tests()
+    #tests()
     open_main_window()
     
 

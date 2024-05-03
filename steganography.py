@@ -108,6 +108,8 @@ def hide_message_inside_lsb(filename, result_filename, message, end_of_message =
 
     new_img = Image.fromarray(data)
     new_img.save(result_filename)
+    
+    return 1
 
 # end_of_message is the character that marsk the end of the message
 #   if not present, read until see an unprintable value
@@ -146,7 +148,6 @@ def hide_image_inside_lsb(cover_image_path, secret_image_path, result_image_path
     
     print(img1.shape)
 
-      
     for i in range(img2.shape[0]): 
         for j in range(img2.shape[1]): 
             for l in range(3): 
@@ -169,10 +170,6 @@ def extract_image_from_lsb(image_path, result_cover_path, result_hidden_path, bi
     height = img.shape[0] 
     width = img.shape[1] 
     
-    print(width)
-    print(height)
-    
-      
     # img1 and img2 are two blank images 
     img1 = np.zeros((height, width, 3), np.uint8) 
     img2 = np.zeros((height, width, 3), np.uint8) 
@@ -182,7 +179,7 @@ def extract_image_from_lsb(image_path, result_cover_path, result_hidden_path, bi
             for l in range(3): 
                 v1 = format(img[i][j][l], '08b') 
                 v2 = v1[:(8-bits_no)] + chr(random.randint(0, 1)+48) * bits_no
-                v3 = v1[bits_no:] + chr(random.randint(0, 1)+48) * (8-bits_no)
+                v3 = v1[(8-bits_no):] + chr(random.randint(0, 1)+48) * (8-bits_no)
                   
                 # Appending data to img1 and img2 
                 img1[i][j][l]= int(v2, 2) 
@@ -402,3 +399,43 @@ def toBits(message):
         bits.append(binval)
     numBits = bin(len(bits))[2:].rjust(8,'0')
     return bits
+
+
+def bitplanes(filename, result_filename):
+    img = Image.open(filename).convert('L')
+    data = np.array(img)
+    out = []
+    # create an image for each k bit plane
+    for k in range(7,-1,-1):
+    # extract kth bit (from 0 to 7)
+        res = data // 2**k & 1
+        out.append(res*255)
+    # stack generated images
+    b = np.hstack(out)
+    result =  Image.fromarray(b)
+    result.save(result_filename)
+    return result
+
+def bitplanes2(filename, result_filename):
+    img = Image.open(filename)
+    data = np.array(img)
+    out = []
+
+    if len(data.shape) == 3:  # RGB image
+        height, width, channels = data.shape
+        for channel in range(channels):
+            channel_data = data[:, :, channel]
+            channel_out = []
+            for k in range(7, -1, -1):
+                res = channel_data // 2**k & 1
+                channel_out.append(res * 255)
+            out.append(np.hstack(channel_out))
+        result = Image.fromarray(np.stack(out, axis=-1).astype(np.uint8))
+    else:  # Grayscale image
+        for k in range(7, -1, -1):
+            res = data // 2**k & 1
+            out.append(res * 255)
+        result = Image.fromarray(np.hstack(out).astype(np.uint8))
+
+    result.save(result_filename)
+    return result
